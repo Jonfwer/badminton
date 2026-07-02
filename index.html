@@ -71,6 +71,15 @@ header h1 { font-size: 1.6rem; color: var(--green-dark); }
 .member-btn.active { border-color: #e65100; background: #fff3e0; color: #e65100; }
 .member-btn:hover { border-color: #e65100; }
 
+/* Guest discount buttons */
+.guest-btn {
+  padding: 4px 10px; border: 1.5px solid var(--border); border-radius: 5px;
+  cursor: pointer; font-size: 0.78rem; font-weight: 600; transition: all 0.2s;
+  background: #fafafa; color: var(--text);
+}
+.guest-btn.active { border-color: #2d8a4e; background: #e8f5e9; color: #2d8a4e; }
+.guest-btn:hover { border-color: #2d8a4e; }
+
 .booking-item {
   background: #f9fbf9; border: 1px solid var(--border); border-radius: 8px;
   padding: 12px 14px; margin-bottom: 8px; position: relative;
@@ -272,6 +281,15 @@ input.small { width: 60px; }
   <!-- 散客用球 -->
   <div class="ball-card guest">
     <div class="ball-title">🏐 散客用球</div>
+    <div style="display:flex;gap:4px;margin-bottom:8px;">
+      <button class="guest-btn active" data-gt="guest100" onclick="switchGuest('guest100')">原价</button>
+      <button class="guest-btn" data-gt="guest_custom" onclick="switchGuest('guest_custom')">自定义</button>
+    </div>
+    <div class="form-row hidden" id="guestCustomRow">
+      <label>折扣</label>
+      <input type="number" class="field small" id="guestCustomDiscount" value="88" min="1" max="99" step="1" oninput="recalcAll()">
+      <span style="font-size:0.82rem;">折</span>
+    </div>
     <div class="form-row">
       <label>带入</label>
       <input type="number" class="field small" id="broughtTube" value="2" min="0" step="1" oninput="recalcAll()">
@@ -300,6 +318,12 @@ input.small { width: 60px; }
     <div style="display:flex;gap:4px;margin-bottom:8px;">
       <button class="member-btn active" data-mt="vip95" onclick="switchMember('vip95')">95折</button>
       <button class="member-btn" data-mt="vip90" onclick="switchMember('vip90')">9折</button>
+      <button class="member-btn" data-mt="member_custom" onclick="switchMember('member_custom')">自定义</button>
+    </div>
+    <div class="form-row hidden" id="memberCustomRow">
+      <label>折扣</label>
+      <input type="number" class="field small" id="memberCustomDiscount" value="70" min="1" max="99" step="1" oninput="recalcAll()">
+      <span style="font-size:0.82rem;">折</span>
     </div>
     <div class="form-row">
       <label>带入</label>
@@ -462,10 +486,21 @@ const PRICES = {
 
 let bookings = [];
 let currentMemberType = 'vip95';
+let currentGuestType = 'guest100';
+
+function switchGuest(gt) {
+  currentGuestType = gt;
+  document.querySelectorAll('.guest-btn').forEach(b => b.classList.toggle('active', b.dataset.gt === gt));
+  const row = document.getElementById('guestCustomRow');
+  if (row) row.classList.toggle('hidden', gt !== 'guest_custom');
+  recalcAll();
+}
 
 function switchMember(mt) {
   currentMemberType = mt;
   document.querySelectorAll('.member-btn').forEach(b => b.classList.toggle('active', b.dataset.mt === mt));
+  const row = document.getElementById('memberCustomRow');
+  if (row) row.classList.toggle('hidden', mt !== 'member_custom');
   recalcAll();
 }
 
@@ -702,10 +737,20 @@ function recalcAll() {
   // Guest court fee
   let guestCourtFee = 0;
   for (const b of bookings) { guestCourtFee += calcBookingFee(b, 'guest'); }
+  if (currentGuestType === 'guest_custom') {
+    const gd = parseInt(document.getElementById('guestCustomDiscount').value) || 100;
+    guestCourtFee = guestCourtFee * gd / 100;
+  }
 
   // Member court fee
   let memberCourtFee = 0;
-  for (const b of bookings) { memberCourtFee += calcBookingFee(b, currentMemberType); }
+  if (currentMemberType === 'member_custom') {
+    for (const b of bookings) { memberCourtFee += calcBookingFee(b, 'guest'); }
+    const md = parseInt(document.getElementById('memberCustomDiscount').value) || 100;
+    memberCourtFee = memberCourtFee * md / 100;
+  } else {
+    for (const b of bookings) { memberCourtFee += calcBookingFee(b, currentMemberType); }
+  }
 
   // Guest shuttle fee
   const guestShuttleFee = calcShuttleFee('');
@@ -721,13 +766,10 @@ function recalcAll() {
   const totalPeople = males + females;
   let malePer = 0, femalePer = 0, maleTotalP = 0, femaleTotalP = 0;
   if (totalPeople > 0 && guestTotal > 0) {
-    const base = guestTotal / totalPeople;
-    femalePer = Math.max(0, base - discount);
-    if (males > 0) {
-      malePer = base + (females * discount) / males;
-    } else if (females > 0) {
-      femalePer = base;
-    }
+    // malePer = (total + F*D) / (M+F), femalePer = malePer - D
+    malePer = (guestTotal + females * discount) / totalPeople;
+    femalePer = malePer - discount;
+    if (females === 0) { femalePer = 0; }
     maleTotalP = malePer * males;
     femaleTotalP = femalePer * females;
   }
