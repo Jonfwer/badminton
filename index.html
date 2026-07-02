@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🏸 羽毛球场地费用计算器</title>
+<style>
+:root {
+  --green: #2d8a4e; --green-dark: #1a6b35; --green-light: #e8f5e9;
+  --bg: #f0f4f0; --card: #fff; --text: #2c3e50; --text-light: #666;
+  --border: #dde4dd; --danger: #e74c3c; --warn: #f39c12;
+  --radius: 12px; --shadow: 0 2px 8px rgba(0,0,0,0.06);
+  --blue: #2979ff; --blue-light: #e3f2fd; --orange: #e67e22;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh;
+}
+.container { max-width: 800px; margin: 0 auto; padding: 16px 16px 40px; }
+header { text-align: center; padding: 24px 0 20px; }
+header h1 { font-size: 1.6rem; color: var(--green-dark); }
+.sub { font-size: 0.85rem; color: var(--text-light); margin-top: 2px; }
+
+.card {
+  background: var(--card); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 18px; margin-bottom: 14px;
+}
+.card-title {
+  font-size: 1rem; font-weight: 700; color: var(--green-dark);
+  margin-bottom: 12px; display: flex; align-items: center; gap: 6px; justify-content: space-between;
+}
+.card-title .title-left { display: flex; align-items: center; gap: 6px; }
+.icon { font-size: 1.15rem; }
+
+.collapse-toggle {
+  font-size: 0.8rem; color: var(--green); cursor: pointer; font-weight: 500;
+  background: none; border: none;
+}
+.collapse-body { transition: max-height 0.3s; overflow: hidden; }
+.collapse-body.collapsed { max-height: 0 !important; margin: 0 !important; }
+
+.zone-group { margin-bottom: 14px; }
+.zone-group:last-child { margin-bottom: 0; }
+.zone-header {
+  font-weight: 700; font-size: 0.9rem; padding: 6px 10px; border-radius: 6px;
+  margin-bottom: 6px; display: flex; align-items: center; gap: 6px;
+}
+.zone-header.a { background: #e8f5e9; color: #2d8a4e; }
+.zone-header.b { background: #e3f2fd; color: #1565c0; }
+.zone-header.vip { background: #fff3e0; color: #e65100; }
+
+.price-subtitle { font-size: 0.78rem; color: var(--text-light); margin: 6px 0 4px; font-weight: 600; }
+.price-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; margin-bottom: 4px; }
+.price-table th { background: var(--green-light); color: var(--green-dark); padding: 5px 3px; text-align: center; font-weight: 600; font-size: 0.72rem; }
+.price-table th:first-child { text-align: left; min-width: 60px; }
+.price-table td { padding: 4px 3px; border-bottom: 1px solid var(--border); text-align: center; }
+.price-table td:first-child { text-align: left; }
+.price-table input { width: 56px; padding: 4px 2px; font-size: 0.75rem; border: 1px solid var(--border); border-radius: 4px; text-align: center; }
+
+.btn-sm { padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer; font-size: 0.78rem; font-weight: 500; transition: opacity 0.15s; }
+.btn-sm:hover { opacity: 0.85; }
+.btn-del { background: #fee; color: var(--danger); }
+.btn-add { background: var(--green-light); color: var(--green-dark); padding: 7px 14px; font-size: 0.82rem; }
+.btn-primary { background: var(--green); color: #fff; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; }
+.btn-primary:hover { opacity: 0.9; }
+
+/* Date toggle */
+.date-toggle {
+  flex: 1; padding: 7px 12px; border: 2px solid var(--border); border-radius: 8px;
+  cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: all 0.2s;
+  background: #fafafa; color: var(--text);
+}
+.date-toggle.active { border-color: var(--green); background: var(--green-light); color: var(--green-dark); }
+.date-toggle:hover { border-color: var(--green); }
+
+/* Member discount buttons */
+.member-btn {
+  padding: 4px 10px; border: 1.5px solid var(--border); border-radius: 5px;
+  cursor: pointer; font-size: 0.78rem; font-weight: 600; transition: all 0.2s;
+  background: #fafafa; color: var(--text);
+}
+.member-btn.active { border-color: #e65100; background: #fff3e0; color: #e65100; }
+.member-btn:hover { border-color: #e65100; }
+
+.booking-item {
+  background: #f9fbf9; border: 1px solid var(--border); border-radius: 8px;
+  padding: 12px 14px; margin-bottom: 8px; position: relative;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+}
+.booking-index {
+  background: var(--green); color: #fff; border-radius: 50%;
+  width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; font-weight: 700; flex-shrink: 0;
+}
+.booking-item select, .booking-item input {
+  padding: 6px 8px; border: 1px solid var(--border); border-radius: 5px;
+  font-size: 0.85rem; font-family: inherit;
+}
+.booking-court { min-width: 72px; }
+.booking-date { display: flex; align-items: center; gap: 3px; font-size: 0.85rem; }
+.booking-time { display: flex; align-items: center; gap: 4px; }
+.booking-fee {
+  font-weight: 700; color: var(--green-dark); font-size: 0.9rem;
+  white-space: nowrap; margin-left: auto;
+}
+.booking-delete {
+  position: absolute; top: 6px; right: 8px;
+  background: none; border: none; color: #ccc; cursor: pointer; font-size: 1rem;
+  padding: 2px 6px; transition: color 0.2s;
+}
+.booking-delete:hover { color: var(--danger); }
+.booking-detail {
+  width: 100%; font-size: 0.73rem; color: var(--text-light); margin-top: 2px;
+  padding-left: 32px;
+}
+.booking-detail span {
+  display: inline-block; padding: 1px 6px; border-radius: 3px;
+  background: #f0f0f0; margin: 1px 2px; font-size: 0.7rem;
+}
+
+.court-total {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border);
+  font-size: 0.95rem; font-weight: 700;
+}
+.court-total .val { color: var(--green-dark); font-size: 1.2rem; }
+
+.radio-group { display: flex; gap: 14px; align-items: center; }
+.radio-group label { display: flex; align-items: center; gap: 4px; font-size: 0.9rem; cursor: pointer; }
+
+.discount-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+
+.unit-tabs { display: flex; margin-bottom: 6px; }
+.unit-tab {
+  padding: 7px 16px; border: 1.5px solid var(--border); cursor: pointer;
+  font-size: 0.85rem; font-weight: 500; transition: all 0.2s;
+}
+.unit-tab:first-child { border-radius: 6px 0 0 6px; }
+.unit-tab:last-child { border-radius: 0 6px 6px 0; }
+.unit-tab.active { background: var(--green); color: #fff; border-color: var(--green); }
+
+.summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.summary-item { background: #f9faf9; border-radius: 8px; padding: 12px; text-align: center; }
+.summary-item.full { grid-column: 1 / -1; }
+.summary-label { font-size: 0.78rem; color: var(--text-light); margin-bottom: 4px; }
+.summary-value { font-size: 1.3rem; font-weight: 700; color: var(--green-dark); }
+.summary-value.big { font-size: 1.7rem; color: var(--orange); }
+.summary-breakdown {
+  margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border);
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+.breakdown-card { padding: 10px; border-radius: 8px; text-align: center; }
+.breakdown-male { background: #e3f2fd; }
+.breakdown-female { background: #fce4ec; }
+.breakdown-card .label { font-size: 0.78rem; color: var(--text-light); }
+.breakdown-card .per { font-size: 1.25rem; font-weight: 700; margin: 2px 0; }
+.breakdown-card .total { font-size: 0.78rem; color: var(--text-light); }
+.breakdown-male .per { color: #1565c0; }
+.breakdown-female .per { color: #c62828; }
+
+.form-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+.form-row label { font-size: 0.88rem; font-weight: 500; white-space: nowrap; min-width: 68px; }
+input[type="number"].field { padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 0.9rem; font-family: inherit; width: 100px; }
+input[type="number"].field:focus { outline: none; border-color: var(--green); }
+input.wide { width: 130px; }
+.warn-text { color: var(--warn); font-size: 0.78rem; margin-top: 4px; }
+.error-text { color: var(--danger); font-size: 0.78rem; margin-top: 4px; }
+.hidden { display: none; }
+
+@media (max-width: 480px) {
+  .summary-grid, .summary-breakdown { grid-template-columns: 1fr; }
+  .card { padding: 14px; }
+  header h1 { font-size: 1.3rem; }
+  .booking-item { flex-direction: column; align-items: flex-start; }
+  .booking-fee { margin-left: 0; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+  <h1>🏸 羽毛球场地费用计算器</h1>
+  <p class="sub">场地编号可选 · 工作日/假日分价 · 会员折扣 · 男女分账</p>
+</header>
+
+<!-- ========== 时段价格表 ========== -->
+<div class="card">
+  <div class="card-title">
+    <span class="title-left"><span class="icon">📋</span> 时段价格表（生效：2026.06.01）</span>
+    <button class="collapse-toggle" onclick="toggleCollapse('priceBody')">收起 ▲</button>
+  </div>
+  <div class="collapse-body" id="priceBody" style="max-height:1400px;">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+      <span style="font-weight:600;font-size:0.9rem;color:var(--green-dark);" id="priceDayLabel">💼 工作日价格</span>
+      <span style="font-size:0.78rem;color:var(--text-light);">（跟随上方日期自动切换）</span>
+    </div>
+    <div id="priceTables"></div>
+  </div>
+</div>
+
+<!-- ========== 场地预订 ========== -->
+<div class="card">
+  <div class="card-title">
+    <span class="title-left"><span class="icon">📅</span> 场地预订</span>
+    <button class="btn-primary" onclick="addBooking()">+ 添加预订</button>
+  </div>
+  <div class="form-row" style="margin-bottom:12px;">
+    <label>日期</label>
+    <input type="date" id="globalDate" value="2026-07-18" onchange="updateDateLabel();renderPriceTables();recalcAll()" style="padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;font-size:0.9rem;font-family:inherit;">
+    <span id="dateDayLabel" style="font-size:0.82rem;color:var(--text-light);"></span>
+  </div>
+  <div id="bookingList"></div>
+  <div class="court-total">
+    <span>场地费合计</span>
+    <span class="val" id="courtFeeTotal">¥0</span>
+  </div>
+</div>
+
+<!-- ========== 人数 ========== -->
+<div class="card">
+  <div class="card-title"><span class="title-left"><span class="icon">👥</span> 人数 & 优惠</span></div>
+  <div class="form-row">
+    <label>👨 男生</label>
+    <input type="number" class="field" id="maleCount" value="4" min="0" max="99" oninput="recalcAll()">
+    <span style="font-size:0.85rem;color:var(--text-light)">人</span>
+  </div>
+  <div class="form-row">
+    <label>👩 女生</label>
+    <input type="number" class="field" id="femaleCount" value="2" min="0" max="99" oninput="recalcAll()">
+    <span style="font-size:0.85rem;color:var(--text-light)">人</span>
+  </div>
+  <div class="form-row">
+    <label>女生优惠</label>
+    <div class="radio-group">
+      <label><input type="radio" name="discount" value="5" checked onchange="recalcAll()"> 5 元/人</label>
+      <label><input type="radio" name="discount" value="8" onchange="recalcAll()"> 8 元/人</label>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 用球 ========== -->
+<div class="card">
+  <div class="card-title"><span class="title-left"><span class="icon">🏐</span> 用球计算</span></div>
+  <div class="form-row" style="margin-top:4px;">
+    <label>带入</label>
+    <input type="number" class="field" id="broughtTube" value="2" min="0" step="1" oninput="recalcAll()" style="width:60px;">
+    <span style="font-size:0.85rem;">桶</span>
+    <input type="number" class="field" id="broughtPcs" value="0" min="0" max="11" step="1" oninput="recalcAll()" style="width:60px;">
+    <span style="font-size:0.85rem;">个</span>
+  </div>
+  <div class="form-row">
+    <label>剩余</label>
+    <input type="number" class="field" id="remainTube" value="0" min="0" step="1" oninput="recalcAll()" style="width:60px;">
+    <span style="font-size:0.85rem;">桶</span>
+    <input type="number" class="field" id="remainPcs" value="6" min="0" max="11" step="1" oninput="recalcAll()" style="width:60px;">
+    <span style="font-size:0.85rem;">个</span>
+  </div>
+  <div class="form-row">
+    <label>每桶价格</label>
+    <input type="number" class="field wide" id="tubePrice" value="85" min="0" step="0.01" oninput="recalcAll()">
+    <span style="font-size:0.85rem;color:var(--text-light)">元/桶 (12个)</span>
+  </div>
+  <div class="warn-text hidden" id="shuttleWarn">⚠ 剩余数量大于带入数量，请检查</div>
+</div>
+
+<!-- ========== 汇总 ========== -->
+<div class="card" id="summaryCard">
+  <div class="card-title"><span class="title-left"><span class="icon">💰</span> 费用汇总</div>
+  <div class="summary-grid">
+    <div class="summary-item">
+      <div class="summary-label">场地费</div>
+      <div class="summary-value" id="sumCourt">¥0</div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-label">球费</div>
+      <div class="summary-value" id="sumShuttle">¥0</div>
+    </div>
+    <div class="summary-item full">
+      <div class="summary-label">💰 散客总费用（场地 + 球）</div>
+      <div class="summary-value big" id="sumTotal">¥0</div>
+    </div>
+    <div class="summary-item full" style="background:#fff3e0;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="summary-label" style="margin-bottom:0;">🏷️ 会员场地费</span>
+        <div style="display:flex;gap:4px;">
+          <button class="member-btn active" data-mt="vip95" onclick="switchMember('vip95')">95折</button>
+          <button class="member-btn" data-mt="vip90" onclick="switchMember('vip90')">9折</button>
+        </div>
+      </div>
+      <div class="summary-value" style="color:#e65100;" id="sumMemberTotal">¥0</div>
+      <div style="font-size:0.73rem;color:var(--text-light);margin-top:2px;" id="memberSavings"></div>
+    </div>
+  </div>
+  <div class="summary-breakdown">
+    <div class="breakdown-card breakdown-male">
+      <div class="label">👨 男生应付</div>
+      <div class="per" id="malePer">¥0</div>
+      <div class="total" id="maleTotal">共 ¥0</div>
+    </div>
+    <div class="breakdown-card breakdown-female">
+      <div class="label">👩 女生应付</div>
+      <div class="per" id="femalePer">¥0</div>
+      <div class="total" id="femaleTotal">共 ¥0</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+// ===== COURT LIST (from venue map) =====
+const COURTS = {
+  A: Array.from({length:20}, (_,i) => `A${i+1}`),
+  B: Array.from({length:15}, (_,i) => `B${i+21}`),
+  VIP: ['VIP1', 'VIP2']
+};
+const ALL_COURTS = [...COURTS.A, ...COURTS.B, ...COURTS.VIP];
+
+// ===== PRICE DATA =====
+const PRICES = {
+  A: {
+    weekday: [
+      {name:'8-12点',start:8,end:12, guest:45,  vip95:42.8, vip90:40.5},
+      {name:'12-14点',start:12,end:14, guest:38,  vip95:36.1, vip90:34.2},
+      {name:'14-16点',start:14,end:16, guest:45,  vip95:42.8, vip90:40.5},
+      {name:'16-18点',start:16,end:18, guest:58,  vip95:55.1, vip90:52.2},
+      {name:'18-19点',start:18,end:19, guest:73,  vip95:69.4, vip90:65.7},
+      {name:'19-22点',start:19,end:22, guest:90,  vip95:85.5, vip90:81.0},
+      {name:'22-23点',start:22,end:23, guest:40,  vip95:30,   vip90:30},
+    ],
+    saturday: [
+      {name:'8-9点',start:8,end:9,   guest:50,  vip95:40,   vip90:40},
+      {name:'9-12点',start:9,end:12,  guest:88,  vip95:83.6, vip90:79.2},
+      {name:'12-14点',start:12,end:14, guest:55,  vip95:52.3, vip90:49.5},
+      {name:'14-18点',start:14,end:18, guest:92,  vip95:87.4, vip90:82.8},
+      {name:'18-20点',start:18,end:20, guest:75, vip95:71.3, vip90:67.5},
+      {name:'20-22点',start:20,end:22, guest:85, vip95:80.8, vip90:76.5},
+      {name:'22-23点',start:22,end:23, guest:50, vip95:40, vip90:40},
+    ],
+    sunday: [
+      {name:'8-9点',start:8,end:9,   guest:50,  vip95:40,   vip90:40},
+      {name:'9-12点',start:9,end:12,  guest:88,  vip95:83.6, vip90:79.2},
+      {name:'12-14点',start:12,end:14, guest:55,  vip95:52.3, vip90:49.5},
+      {name:'14-18点',start:14,end:18, guest:92,  vip95:87.4, vip90:82.8},
+      {name:'18-22点',start:18,end:22, guest:73, vip95:69.4, vip90:65.7},
+      {name:'22-23点',start:22,end:23, guest:50, vip95:40, vip90:40},
+    ]
+  },
+  B: {
+    weekday: [
+      {name:'8-12点',start:8,end:12, guest:50,  vip95:47.5, vip90:45.0},
+      {name:'12-14点',start:12,end:14, guest:43,  vip95:40.9, vip90:38.7},
+      {name:'14-16点',start:14,end:16, guest:50,  vip95:47.5, vip90:45.0},
+      {name:'16-18点',start:16,end:18, guest:63,  vip95:59.9, vip90:56.7},
+      {name:'18-19点',start:18,end:19, guest:78,  vip95:74.1, vip90:70.2},
+      {name:'19-22点',start:19,end:22, guest:95,  vip95:90.3, vip90:85.5},
+      {name:'22-23点',start:22,end:23, guest:45,  vip95:35,   vip90:35},
+    ],
+    saturday: [
+      {name:'8-9点',start:8,end:9,   guest:55,  vip95:45,   vip90:45},
+      {name:'9-12点',start:9,end:12,  guest:93,  vip95:88.4, vip90:83.7},
+      {name:'12-14点',start:12,end:14, guest:60,  vip95:57.0, vip90:54.0},
+      {name:'14-18点',start:14,end:18, guest:97,  vip95:92.2, vip90:87.3},
+      {name:'18-20点',start:18,end:20, guest:80, vip95:76.0, vip90:72.0},
+      {name:'20-22点',start:20,end:22, guest:90, vip95:85.5, vip90:81.0},
+      {name:'22-23点',start:22,end:23, guest:55, vip95:45, vip90:45},
+    ],
+    sunday: [
+      {name:'8-9点',start:8,end:9,   guest:55,  vip95:45,   vip90:45},
+      {name:'9-12点',start:9,end:12,  guest:93,  vip95:88.4, vip90:83.7},
+      {name:'12-14点',start:12,end:14, guest:60,  vip95:57.0, vip90:54.0},
+      {name:'14-18点',start:14,end:18, guest:97,  vip95:92.2, vip90:87.3},
+      {name:'18-22点',start:18,end:22, guest:78, vip95:74.1, vip90:70.2},
+      {name:'22-23点',start:22,end:23, guest:55, vip95:45, vip90:45},
+    ]
+  },
+  VIP: {
+    weekday: [
+      {name:'8-12点',start:8,end:12, guest:65,  vip95:61.8, vip90:58.5},
+      {name:'12-14点',start:12,end:14, guest:55,  vip95:52.3, vip90:49.5},
+      {name:'14-16点',start:14,end:16, guest:65,  vip95:61.8, vip90:58.5},
+      {name:'16-18点',start:16,end:18, guest:70,  vip95:66.5, vip90:63.0},
+      {name:'18-19点',start:18,end:19, guest:98,  vip95:93.1, vip90:88.2},
+      {name:'19-22点',start:19,end:22, guest:103, vip95:97.9, vip90:92.7},
+      {name:'22-23点',start:22,end:23, guest:60,  vip95:50,   vip90:50},
+    ],
+    saturday: [
+      {name:'8-9点',start:8,end:9,   guest:70,  vip95:60,   vip90:60},
+      {name:'9-12点',start:9,end:12,  guest:98,  vip95:93.1, vip90:88.2},
+      {name:'12-14点',start:12,end:14, guest:70,  vip95:66.5, vip90:63.0},
+      {name:'14-18点',start:14,end:18, guest:98,  vip95:93.1, vip90:88.2},
+      {name:'18-20点',start:18,end:20, guest:88, vip95:83.6, vip90:79.2},
+      {name:'20-22点',start:20,end:22, guest:98, vip95:93.1, vip90:88.2},
+      {name:'22-23点',start:22,end:23, guest:70, vip95:60, vip90:60},
+    ],
+    sunday: [
+      {name:'8-9点',start:8,end:9,   guest:70,  vip95:60,   vip90:60},
+      {name:'9-12点',start:9,end:12,  guest:98,  vip95:93.1, vip90:88.2},
+      {name:'12-14点',start:12,end:14, guest:70,  vip95:66.5, vip90:63.0},
+      {name:'14-18点',start:14,end:18, guest:98,  vip95:93.1, vip90:88.2},
+      {name:'18-22点',start:18,end:22, guest:88, vip95:83.6, vip90:79.2},
+      {name:'22-23点',start:22,end:23, guest:70, vip95:60, vip90:60},
+    ]
+  }
+};
+
+let bookings = [];
+let currentMemberType = 'vip95';
+
+function switchMember(mt) {
+  currentMemberType = mt;
+  document.querySelectorAll('.member-btn').forEach(b => b.classList.toggle('active', b.dataset.mt === mt));
+  recalcAll();
+}
+
+// ===== Get court type from court number =====
+function courtType(courtNum) {
+  if (!courtNum) return 'A';
+  if (courtNum.startsWith('VIP')) return 'VIP';
+  if (courtNum.startsWith('B')) return 'B';
+  return 'A';
+}
+
+// ===== Global date =====
+function getDate() {
+  const val = document.getElementById('globalDate').value;
+  if (!val) return new Date(2026, 6, 18);
+  return new Date(val + 'T00:00:00');
+}
+
+function getDayType() {
+  const d = getDate();
+  const w = d.getDay();
+  if (w === 0) return 'sunday';
+  if (w === 6) return 'saturday';
+  return 'weekday';
+}
+
+function isWeekend() {
+  const d = getDate();
+  return d.getDay() === 0 || d.getDay() === 6;
+}
+
+// ===== Get price for a specific court + hour + member type =====
+function getHourPrice(courtNum, hour, memberType) {
+  const type = courtType(courtNum);
+  const dt = getDayType();
+  const periods = PRICES[type][dt];
+  for (const p of periods) {
+    if (hour >= p.start && hour < p.end) {
+      return p[memberType] || p.guest;
+    }
+  }
+  return 0;
+}
+
+// ===== Render price tables =====
+let currentDateType = 'weekday';
+
+function switchDateType(dt) {
+  currentDateType = dt;
+  document.querySelectorAll('.date-toggle').forEach(b => b.classList.toggle('active', b.dataset.dt === dt));
+  renderPriceTables();
+}
+
+function renderPriceTables() {
+  const zones = [{key:'A', label:'🟢 A 区（A1-A20）', cls:'a'},
+                 {key:'B', label:'🔵 B 区（B21-B35）', cls:'b'},
+                 {key:'VIP', label:'🟠 VIP 区（VIP1-VIP2）', cls:'vip'}];
+  const fields = ['guest','vip95','vip90'];
+  const dayType = getDayType();
+  // Update label
+  document.getElementById('priceDayLabel').textContent = isWeekend() ? '🎉 周末/节假日价格' : '💼 工作日价格';
+  let html = '';
+  for (const z of zones) {
+    const periods = PRICES[z.key][dayType];
+    html += `<div class="zone-group">
+      <div class="zone-header ${z.cls}">${z.label}</div>
+      <table class="price-table"><thead><tr><th>时段</th><th>时间</th><th>散客</th><th>95折</th><th>9折</th></tr></thead>
+      <tbody>`;
+    html += periods.map((p,i) => `
+      <tr>
+        <td>${esc(p.name)}</td>
+        <td>${p.start}:00-${p.end}:00</td>
+        ${fields.map(f => `<td><input type="number" value="${p[f]}" step="0.1" min="0"
+          oninput="updatePrice('${z.key}','${dayType}',${i},'${f}',parseFloat(this.value)||0)"></td>`).join('')}
+      </tr>`).join('');
+    html += '</tbody></table></div>';
+  }
+  document.getElementById('priceTables').innerHTML = html;
+}
+
+function renderAllPrices() {
+  renderPriceTables();
+}
+
+function updatePrice(zone, dayType, idx, field, val) {
+  PRICES[zone][dayType][idx][field] = val;
+  recalcAll();
+}
+
+// ===== Hour options =====
+function hourOptions(selected, start) {
+  let html = '';
+  for (let h = 8; h <= 23; h++) {
+    if (start !== undefined && h <= start) continue;
+    html += `<option value="${h}" ${h===selected?'selected':''}>${String(h).padStart(2,'0')}:00</option>`;
+  }
+  return html;
+}
+
+// ===== Court options =====
+function getUsedCourts(excludeIdx) {
+  const used = new Set();
+  for (let i = 0; i < bookings.length; i++) {
+    if (i !== excludeIdx && bookings[i].court) used.add(bookings[i].court);
+  }
+  return used;
+}
+
+function courtOptions(selected, excludeIdx) {
+  const used = getUsedCourts(excludeIdx);
+  let html = '<option value="">不限场地</option>';
+  const opt = (label, courts) => {
+    const avail = courts.filter(c => c === selected || !used.has(c));
+    if (avail.length === 0) return '';
+    let h = `<optgroup label="${label}">`;
+    for (const c of courts) {
+      const disabled = (c !== selected && used.has(c)) ? ' disabled style="color:#ccc"' : '';
+      h += `<option value="${c}"${c===selected?' selected':''}${disabled}>${c}${disabled?' (已占用)':''}</option>`;
+    }
+    h += '</optgroup>';
+    return h;
+  };
+  html += opt('A区（A1-A20）', COURTS.A);
+  html += opt('B区（B21-B35）', COURTS.B);
+  html += opt('VIP区（VIP1-VIP2）', COURTS.VIP);
+  return html;
+}
+
+// ===== Bookings =====
+function addBooking() {
+  // Auto-assign first unused court
+  const used = getUsedCourts(-1);
+  let court = '';
+  for (const c of [...COURTS.A, ...COURTS.B, ...COURTS.VIP]) {
+    if (!used.has(c)) { court = c; break; }
+  }
+  bookings.push({ court, start: 20, end: 22, qty: 1 });
+  recalcAll();
+}
+
+function removeBooking(i) {
+  bookings.splice(i, 1);
+  recalcAll();
+}
+
+function updateBooking(i, field, value) {
+  bookings[i][field] = value;
+  if (field === 'start' && bookings[i].end <= value) {
+    bookings[i].end = value + 1;
+  }
+  if (field === 'court') renderBookingList();
+  recalcAll();
+}
+
+function calcBookingFee(b) {
+  const qty = b.qty || 1;
+  let fee = 0;
+  for (let h = b.start; h < b.end; h++) {
+    fee += getHourPrice(b.court, h, 'guest');
+  }
+  return fee * qty;
+}
+
+function calcBookingDetail(b) {
+  const dt = getDayType();
+  const type = courtType(b.court) || 'A';
+  const periods = PRICES[type][dt];
+  const parts = [];
+  for (let h = b.start; h < b.end; h++) {
+    let pName = '?', rate = 0;
+    for (const p of periods) {
+      if (h >= p.start && h < p.end) { pName = p.name; rate = p.guest; break; }
+    }
+    parts.push(`${String(h).padStart(2,'0')}:00 ${pName} ¥${rate}`);
+  }
+  return parts.map(s => `<span>${s}</span>`).join('');
+}
+
+function renderBookingList() {
+  const container = document.getElementById('bookingList');
+  if (bookings.length === 0) {
+    container.innerHTML = '<div style="color:var(--text-light);font-size:0.85rem;padding:8px 0;">暂无预订，点击「+ 添加预订」</div>';
+    return;
+  }
+  container.innerHTML = bookings.map((b, i) => {
+    const fee = calcBookingFee(b);
+    const detail = calcBookingDetail(b);
+    const qty = b.qty || 1;
+    return `
+    <div class="booking-item">
+      <span class="booking-index">${i + 1}</span>
+      <select class="booking-court" onchange="updateBooking(${i},'court',this.value)">
+        ${courtOptions(b.court, i)}
+      </select>
+      <span class="booking-time">
+        <select onchange="updateBooking(${i},'start',parseInt(this.value))">${hourOptions(b.start)}</select>
+        <span>至</span>
+        <select onchange="updateBooking(${i},'end',parseInt(this.value))">${hourOptions(b.end, b.start)}</select>
+      </span>
+      <span style="display:flex;align-items:center;gap:3px;font-size:0.85rem;">
+        × <input type="number" value="${qty}" min="1" max="99" style="width:44px;text-align:center;padding:6px 4px;border:1px solid var(--border);border-radius:5px;font-size:0.85rem;" onchange="updateBooking(${i},'qty',parseInt(this.value)||1)">
+      </span>
+      <span class="booking-fee">¥${fee.toFixed(0)}</span>
+      <div class="booking-detail">${detail}</div>
+      <button class="booking-delete" onclick="removeBooking(${i})" title="删除">✕</button>
+    </div>`;
+  }).join('');
+}
+
+// ===== Shuttle =====
+function calcShuttleFee() {
+  const broughtTube = parseInt(document.getElementById('broughtTube').value) || 0;
+  const broughtPcs = parseInt(document.getElementById('broughtPcs').value) || 0;
+  const remainTube = parseInt(document.getElementById('remainTube').value) || 0;
+  const remainPcs = parseInt(document.getElementById('remainPcs').value) || 0;
+  const tubePrice = parseFloat(document.getElementById('tubePrice').value) || 0;
+  const totalBrought = broughtTube * 12 + broughtPcs;
+  const totalRemain = remainTube * 12 + remainPcs;
+  let used = totalBrought - totalRemain;
+  const warn = document.getElementById('shuttleWarn');
+  if (used < 0) { used = 0; warn.classList.remove('hidden'); }
+  else { warn.classList.add('hidden'); }
+  return (used / 12) * tubePrice;
+}
+
+// ===== Recalc =====
+function toggleCollapse(id) {
+  const el = document.getElementById(id);
+  const btn = document.querySelector('.collapse-toggle');
+  if (el.classList.contains('collapsed')) {
+    el.classList.remove('collapsed');
+    el.style.maxHeight = '1400px';
+    if (btn) btn.textContent = '收起 ▲';
+  } else {
+    el.classList.add('collapsed');
+    el.style.maxHeight = '0';
+    if (btn) btn.textContent = '展开 ▼';
+  }
+}
+
+// ===== Recalc =====
+function recalcAll() {
+  updateDateLabel();
+  const males = parseInt(document.getElementById('maleCount').value) || 0;
+  const females = parseInt(document.getElementById('femaleCount').value) || 0;
+  const discount = parseInt(document.querySelector('input[name="discount"]:checked').value);
+
+  renderBookingList();
+
+  let courtFee = 0;
+  for (const b of bookings) { courtFee += calcBookingFee(b); }
+
+  // Member court fee
+  let memberCourtFee = 0;
+  for (const b of bookings) {
+    let mfee = 0;
+    for (let h = b.start; h < b.end; h++) {
+      mfee += getHourPrice(b.court, h, currentMemberType);
+    }
+    memberCourtFee += mfee * (b.qty || 1);
+  }
+
+  const shuttleFee = calcShuttleFee();
+  const total = courtFee + shuttleFee;
+  const totalPeople = males + females;
+  let malePer = 0, femalePer = 0, maleTotal = 0, femaleTotal = 0;
+
+  if (totalPeople > 0 && total > 0) {
+    const base = total / totalPeople;
+    femalePer = Math.max(0, base - discount);
+    if (males > 0) {
+      malePer = base + (females * discount) / males;
+    } else if (females > 0) {
+      femalePer = base;
+    }
+    maleTotal = malePer * males;
+    femaleTotal = femalePer * females;
+  }
+
+  document.getElementById('courtFeeTotal').textContent = '¥' + courtFee.toFixed(2);
+  document.getElementById('sumCourt').textContent = '¥' + courtFee.toFixed(2);
+  document.getElementById('sumShuttle').textContent = '¥' + shuttleFee.toFixed(2);
+  document.getElementById('sumTotal').textContent = '¥' + total.toFixed(2);
+  const memberTotalFee = memberCourtFee + shuttleFee;
+  document.getElementById('sumMemberTotal').textContent = '¥' + memberTotalFee.toFixed(2);
+  const savings = total - memberTotalFee;
+  document.getElementById('memberSavings').textContent = savings > 0 ? '省 ¥' + savings.toFixed(2) : '';
+  document.getElementById('malePer').textContent = '¥' + malePer.toFixed(2) + '/人';
+  document.getElementById('maleTotal').textContent = '共 ¥' + maleTotal.toFixed(2);
+  document.getElementById('femalePer').textContent = '¥' + femalePer.toFixed(2) + '/人';
+  document.getElementById('femaleTotal').textContent = '共 ¥' + femaleTotal.toFixed(2);
+}
+
+function esc(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function init() {
+  // Set today's date as default
+  const today = new Date();
+  document.getElementById('globalDate').value = today.toISOString().split('T')[0];
+  recalcAll();
+  renderAllPrices();
+  bookings = [
+    { court: 'A1', start: 20, end: 22, qty: 1 },
+    { court: 'B21', start: 20, end: 22, qty: 1 },
+  ];
+  recalcAll();
+}
+
+function updateDateLabel() {
+  const d = getDate();
+  const days = ['周日','周一','周二','周三','周四','周五','周六'];
+  const label = isWeekend() ? '🎉 周末' : '💼 工作日';
+  document.getElementById('dateDayLabel').textContent = days[d.getDay()] + ' ' + label;
+  // Also update price table label
+  const priceLabel = document.getElementById('priceDayLabel');
+  if (priceLabel) priceLabel.textContent = isWeekend() ? '🎉 周末/节假日价格' : '💼 工作日价格';
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
