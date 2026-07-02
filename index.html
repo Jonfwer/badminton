@@ -219,6 +219,7 @@ input.small { width: 60px; }
 <header>
   <h1>🏸 羽毛球场地费用计算器</h1>
   <p class="sub">场地编号可选 · 工作日/假日分价 · 散客/会员分算 · 男女分账</p>
+  <button class="btn-sm" style="margin-top:8px;background:#e74c3c;color:#fff;border:none;padding:6px 16px;border-radius:6px;cursor:pointer;font-size:0.82rem;font-weight:600;" onclick="resetAll()">🔄 重置</button>
 </header>
 
 <!-- ========== 时段价格表 ========== -->
@@ -808,20 +809,97 @@ function recalcAll() {
   document.getElementById('maleTotal').textContent = '共 ¥' + maleTotalP.toFixed(2);
   document.getElementById('femalePer').textContent = '¥' + femalePer.toFixed(2) + '/人';
   document.getElementById('femaleTotal').textContent = '共 ¥' + femaleTotalP.toFixed(2);
+  saveAll();
 }
 
 function esc(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
+// ===== localStorage persistence =====
+function saveAll() {
+  const data = {
+    globalDate: document.getElementById('globalDate').value,
+    maleCount: document.getElementById('maleCount').value,
+    femaleCount: document.getElementById('femaleCount').value,
+    discount: document.querySelector('input[name="discount"]:checked').value,
+    currentGuestType: currentGuestType,
+    guestCustomDiscount: document.getElementById('guestCustomDiscount').value,
+    currentMemberType: currentMemberType,
+    memberCustomDiscount: document.getElementById('memberCustomDiscount').value,
+    broughtTube: document.getElementById('broughtTube').value,
+    broughtPcs: document.getElementById('broughtPcs').value,
+    remainTube: document.getElementById('remainTube').value,
+    remainPcs: document.getElementById('remainPcs').value,
+    tubePrice: document.getElementById('tubePrice').value,
+    mbroughtTube: document.getElementById('mbroughtTube').value,
+    mbroughtPcs: document.getElementById('mbroughtPcs').value,
+    mremainTube: document.getElementById('mremainTube').value,
+    mremainPcs: document.getElementById('mremainPcs').value,
+    mtubePrice: document.getElementById('mtubePrice').value,
+    bookings: bookings,
+    priceTables: PRICES,
+    collapseOpen: !document.getElementById('priceBody').classList.contains('collapsed')
+  };
+  localStorage.setItem('badminton_calc', JSON.stringify(data));
+}
+
+function loadAll() {
+  const raw = localStorage.getItem('badminton_calc');
+  if (!raw) return;
+  try {
+    const data = JSON.parse(raw);
+    // Restore date
+    if (data.globalDate) document.getElementById('globalDate').value = data.globalDate;
+    // Restore people
+    if (data.maleCount) document.getElementById('maleCount').value = data.maleCount;
+    if (data.femaleCount) document.getElementById('femaleCount').value = data.femaleCount;
+    // Restore discount radio
+    const discRadio = document.querySelector(`input[name="discount"][value="${data.discount || '5'}"]`);
+    if (discRadio) discRadio.checked = true;
+    // Restore guest type
+    if (data.currentGuestType) switchGuest(data.currentGuestType);
+    if (data.guestCustomDiscount) document.getElementById('guestCustomDiscount').value = data.guestCustomDiscount;
+    // Restore member type
+    if (data.currentMemberType) switchMember(data.currentMemberType);
+    if (data.memberCustomDiscount) document.getElementById('memberCustomDiscount').value = data.memberCustomDiscount;
+    // Restore shuttle fields
+    ['broughtTube','broughtPcs','remainTube','remainPcs','tubePrice',
+     'mbroughtTube','mbroughtPcs','mremainTube','mremainPcs','mtubePrice'].forEach(id => {
+      if (data[id] !== undefined) document.getElementById(id).value = data[id];
+    });
+    // Restore bookings
+    if (data.bookings) bookings = data.bookings;
+    // Restore price tables (user edits)
+    if (data.priceTables) Object.assign(PRICES, data.priceTables);
+    // Restore collapse state
+    if (data.collapseOpen === false) {
+      document.getElementById('priceBody').classList.add('collapsed');
+      document.getElementById('priceBody').style.maxHeight = '0';
+      document.querySelector('.collapse-toggle').textContent = '展开 ▼';
+    }
+  } catch(e) { /* ignore corrupt data */ }
+}
+
+function resetAll() {
+  if (confirm('确定要重置所有内容吗？')) {
+    localStorage.removeItem('badminton_calc');
+    location.reload();
+  }
+}
+
 function init() {
-  const today = new Date();
-  document.getElementById('globalDate').value = today.toISOString().split('T')[0];
-  recalcAll();
   renderPriceTables();
-  bookings = [
-    { court: 'A1', start: 20, end: 22, qty: 1 },
-    { court: 'B21', start: 20, end: 22, qty: 1 },
-  ];
+  loadAll();
+  // If no saved data, seed defaults
+  if (!localStorage.getItem('badminton_calc')) {
+    const today = new Date();
+    document.getElementById('globalDate').value = today.toISOString().split('T')[0];
+    bookings = [
+      { court: 'A1', start: 20, end: 22, qty: 1 },
+      { court: 'B21', start: 20, end: 22, qty: 1 },
+    ];
+  }
   recalcAll();
+  saveAll();
 }
 
 function updateDateLabel() {
