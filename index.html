@@ -50,7 +50,6 @@ header h1 { font-size: 1.6rem; color: var(--green-dark); }
 .zone-header.b { background: #e3f2fd; color: #1565c0; }
 .zone-header.vip { background: #fff3e0; color: #e65100; }
 
-.price-subtitle { font-size: 0.78rem; color: var(--text-light); margin: 6px 0 4px; font-weight: 600; }
 .price-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; margin-bottom: 4px; }
 .price-table th { background: var(--green-light); color: var(--green-dark); padding: 5px 3px; text-align: center; font-weight: 600; font-size: 0.72rem; }
 .price-table th:first-child { text-align: left; min-width: 60px; }
@@ -60,19 +59,8 @@ header h1 { font-size: 1.6rem; color: var(--green-dark); }
 
 .btn-sm { padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer; font-size: 0.78rem; font-weight: 500; transition: opacity 0.15s; }
 .btn-sm:hover { opacity: 0.85; }
-.btn-del { background: #fee; color: var(--danger); }
-.btn-add { background: var(--green-light); color: var(--green-dark); padding: 7px 14px; font-size: 0.82rem; }
 .btn-primary { background: var(--green); color: #fff; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; }
 .btn-primary:hover { opacity: 0.9; }
-
-/* Date toggle */
-.date-toggle {
-  flex: 1; padding: 7px 12px; border: 2px solid var(--border); border-radius: 8px;
-  cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: all 0.2s;
-  background: #fafafa; color: var(--text);
-}
-.date-toggle.active { border-color: var(--green); background: var(--green-light); color: var(--green-dark); }
-.date-toggle:hover { border-color: var(--green); }
 
 /* Member discount buttons */
 .member-btn {
@@ -98,8 +86,6 @@ header h1 { font-size: 1.6rem; color: var(--green-dark); }
   font-size: 0.85rem; font-family: inherit;
 }
 .booking-court { min-width: 72px; }
-.booking-date { display: flex; align-items: center; gap: 3px; font-size: 0.85rem; }
-.booking-time { display: flex; align-items: center; gap: 4px; }
 .booking-fee {
   font-weight: 700; color: var(--green-dark); font-size: 0.9rem;
   white-space: nowrap; margin-left: auto;
@@ -129,23 +115,73 @@ header h1 { font-size: 1.6rem; color: var(--green-dark); }
 .radio-group { display: flex; gap: 14px; align-items: center; }
 .radio-group label { display: flex; align-items: center; gap: 4px; font-size: 0.9rem; cursor: pointer; }
 
-.discount-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+.form-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+.form-row label { font-size: 0.88rem; font-weight: 500; white-space: nowrap; min-width: 40px; }
+input[type="number"].field { padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 0.9rem; font-family: inherit; width: 100px; }
+input[type="number"].field:focus { outline: none; border-color: var(--green); }
+input.wide { width: 130px; }
+input.small { width: 60px; }
+.warn-text { color: var(--warn); font-size: 0.78rem; margin-top: 4px; }
+.hidden { display: none; }
 
-.unit-tabs { display: flex; margin-bottom: 6px; }
-.unit-tab {
-  padding: 7px 16px; border: 1.5px solid var(--border); cursor: pointer;
-  font-size: 0.85rem; font-weight: 500; transition: all 0.2s;
+/* Ball cards side by side */
+.ball-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
 }
-.unit-tab:first-child { border-radius: 6px 0 0 6px; }
-.unit-tab:last-child { border-radius: 0 6px 6px 0; }
-.unit-tab.active { background: var(--green); color: #fff; border-color: var(--green); }
+.ball-card {
+  border-radius: var(--radius); padding: 14px;
+}
+.ball-card.guest { background: #f9fbf9; border: 1.5px solid var(--border); }
+.ball-card.member { background: #fff8f0; border: 1.5px solid #f5c88a; }
+.ball-card .ball-title {
+  font-weight: 700; font-size: 0.92rem; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 4px;
+}
+.ball-card.guest .ball-title { color: var(--green-dark); }
+.ball-card.member .ball-title { color: #e65100; }
+.ball-card .form-row { margin-bottom: 6px; }
+.ball-card .form-row:last-child { margin-bottom: 0; }
+.ball-card .form-row label { min-width: 42px; font-size: 0.82rem; }
+.ball-card .field { width: 50px; font-size: 0.82rem; padding: 6px 4px; }
+.ball-card .wide { width: 70px; }
+.ball-card .warn-text { font-size: 0.72rem; }
 
+/* Summary */
 .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.summary-grid.three { grid-template-columns: 1fr 1fr 1fr; }
 .summary-item { background: #f9faf9; border-radius: 8px; padding: 12px; text-align: center; }
 .summary-item.full { grid-column: 1 / -1; }
 .summary-label { font-size: 0.78rem; color: var(--text-light); margin-bottom: 4px; }
 .summary-value { font-size: 1.3rem; font-weight: 700; color: var(--green-dark); }
-.summary-value.big { font-size: 1.7rem; color: var(--orange); }
+.summary-value.big { font-size: 1.6rem; }
+
+/* Totals row */
+.totals-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;
+}
+.total-card {
+  border-radius: 10px; padding: 14px; text-align: center;
+}
+.total-card.guest-total { background: #e8f5e9; border: 2px solid #a5d6a7; }
+.total-card.member-total { background: #fff3e0; border: 2px solid #ffcc80; }
+.total-card .total-label { font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; }
+.total-card.guest-total .total-label { color: var(--green-dark); }
+.total-card.member-total .total-label { color: #e65100; }
+.total-card .total-amount { font-size: 1.6rem; font-weight: 700; }
+.total-card.guest-total .total-amount { color: var(--green-dark); }
+.total-card.member-total .total-amount { color: #e65100; }
+.total-card .total-detail { font-size: 0.73rem; color: var(--text-light); margin-top: 4px; }
+
+/* Diff */
+.diff-bar {
+  margin-top: 12px; padding: 12px 16px; border-radius: 10px;
+  text-align: center; font-weight: 700; font-size: 0.95rem;
+}
+.diff-bar.cheaper { background: #fff3e0; color: #e65100; }
+.diff-bar.same { background: #f5f5f5; color: var(--text-light); }
+
 .summary-breakdown {
   margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border);
   display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
@@ -159,17 +195,9 @@ header h1 { font-size: 1.6rem; color: var(--green-dark); }
 .breakdown-male .per { color: #1565c0; }
 .breakdown-female .per { color: #c62828; }
 
-.form-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
-.form-row label { font-size: 0.88rem; font-weight: 500; white-space: nowrap; min-width: 68px; }
-input[type="number"].field { padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 0.9rem; font-family: inherit; width: 100px; }
-input[type="number"].field:focus { outline: none; border-color: var(--green); }
-input.wide { width: 130px; }
-.warn-text { color: var(--warn); font-size: 0.78rem; margin-top: 4px; }
-.error-text { color: var(--danger); font-size: 0.78rem; margin-top: 4px; }
-.hidden { display: none; }
-
 @media (max-width: 480px) {
-  .summary-grid, .summary-breakdown { grid-template-columns: 1fr; }
+  .ball-grid { grid-template-columns: 1fr; }
+  .summary-grid, .summary-grid.three, .totals-row { grid-template-columns: 1fr; }
   .card { padding: 14px; }
   header h1 { font-size: 1.3rem; }
   .booking-item { flex-direction: column; align-items: flex-start; }
@@ -181,7 +209,7 @@ input.wide { width: 130px; }
 <div class="container">
 <header>
   <h1>🏸 羽毛球场地费用计算器</h1>
-  <p class="sub">场地编号可选 · 工作日/假日分价 · 会员折扣 · 男女分账</p>
+  <p class="sub">场地编号可选 · 工作日/假日分价 · 散客/会员分算 · 男女分账</p>
 </header>
 
 <!-- ========== 时段价格表 ========== -->
@@ -239,59 +267,87 @@ input.wide { width: 130px; }
   </div>
 </div>
 
-<!-- ========== 用球 ========== -->
-<div class="card">
-  <div class="card-title"><span class="title-left"><span class="icon">🏐</span> 用球计算</span></div>
-  <div class="form-row" style="margin-top:4px;">
-    <label>带入</label>
-    <input type="number" class="field" id="broughtTube" value="2" min="0" step="1" oninput="recalcAll()" style="width:60px;">
-    <span style="font-size:0.85rem;">桶</span>
-    <input type="number" class="field" id="broughtPcs" value="0" min="0" max="11" step="1" oninput="recalcAll()" style="width:60px;">
-    <span style="font-size:0.85rem;">个</span>
+<!-- ========== 用球（散客 + 会员 并列） ========== -->
+<div class="ball-grid">
+  <!-- 散客用球 -->
+  <div class="ball-card guest">
+    <div class="ball-title">🏐 散客用球</div>
+    <div class="form-row">
+      <label>带入</label>
+      <input type="number" class="field small" id="broughtTube" value="2" min="0" step="1" oninput="recalcAll()">
+      <span style="font-size:0.82rem;">桶</span>
+      <input type="number" class="field small" id="broughtPcs" value="0" min="0" max="11" step="1" oninput="recalcAll()">
+      <span style="font-size:0.82rem;">个</span>
+    </div>
+    <div class="form-row">
+      <label>剩余</label>
+      <input type="number" class="field small" id="remainTube" value="0" min="0" step="1" oninput="recalcAll()">
+      <span style="font-size:0.82rem;">桶</span>
+      <input type="number" class="field small" id="remainPcs" value="6" min="0" max="11" step="1" oninput="recalcAll()">
+      <span style="font-size:0.82rem;">个</span>
+    </div>
+    <div class="form-row">
+      <label>每桶</label>
+      <input type="number" class="field wide" id="tubePrice" value="85" min="0" step="0.01" oninput="recalcAll()">
+      <span style="font-size:0.78rem;color:var(--text-light)">元/桶</span>
+    </div>
+    <div class="warn-text hidden" id="shuttleWarn">⚠ 剩余数量大于带入数量，请检查</div>
   </div>
-  <div class="form-row">
-    <label>剩余</label>
-    <input type="number" class="field" id="remainTube" value="0" min="0" step="1" oninput="recalcAll()" style="width:60px;">
-    <span style="font-size:0.85rem;">桶</span>
-    <input type="number" class="field" id="remainPcs" value="6" min="0" max="11" step="1" oninput="recalcAll()" style="width:60px;">
-    <span style="font-size:0.85rem;">个</span>
+
+  <!-- 会员用球 -->
+  <div class="ball-card member">
+    <div class="ball-title">🏷️ 会员用球</div>
+    <div style="display:flex;gap:4px;margin-bottom:8px;">
+      <button class="member-btn active" data-mt="vip95" onclick="switchMember('vip95')">95折</button>
+      <button class="member-btn" data-mt="vip90" onclick="switchMember('vip90')">9折</button>
+    </div>
+    <div class="form-row">
+      <label>带入</label>
+      <input type="number" class="field small" id="mbroughtTube" value="2" min="0" step="1" oninput="recalcAll()">
+      <span style="font-size:0.82rem;">桶</span>
+      <input type="number" class="field small" id="mbroughtPcs" value="0" min="0" max="11" step="1" oninput="recalcAll()">
+      <span style="font-size:0.82rem;">个</span>
+    </div>
+    <div class="form-row">
+      <label>剩余</label>
+      <input type="number" class="field small" id="mremainTube" value="0" min="0" step="1" oninput="recalcAll()">
+      <span style="font-size:0.82rem;">桶</span>
+      <input type="number" class="field small" id="mremainPcs" value="6" min="0" max="11" step="1" oninput="recalcAll()">
+      <span style="font-size:0.82rem;">个</span>
+    </div>
+    <div class="form-row">
+      <label>每桶</label>
+      <input type="number" class="field wide" id="mtubePrice" value="85" min="0" step="0.01" oninput="recalcAll()">
+      <span style="font-size:0.78rem;color:var(--text-light)">元/桶</span>
+    </div>
+    <div class="warn-text hidden" id="mshuttleWarn">⚠ 剩余数量大于带入数量，请检查</div>
   </div>
-  <div class="form-row">
-    <label>每桶价格</label>
-    <input type="number" class="field wide" id="tubePrice" value="85" min="0" step="0.01" oninput="recalcAll()">
-    <span style="font-size:0.85rem;color:var(--text-light)">元/桶 (12个)</span>
-  </div>
-  <div class="warn-text hidden" id="shuttleWarn">⚠ 剩余数量大于带入数量，请检查</div>
 </div>
 
 <!-- ========== 汇总 ========== -->
 <div class="card" id="summaryCard">
-  <div class="card-title"><span class="title-left"><span class="icon">💰</span> 费用汇总</div>
-  <div class="summary-grid">
-    <div class="summary-item">
-      <div class="summary-label">场地费</div>
-      <div class="summary-value" id="sumCourt">¥0</div>
+  <div class="card-title"><span class="title-left"><span class="icon">💰</span> 费用汇总</span></div>
+
+  <!-- 两列总价 -->
+  <div class="totals-row">
+    <div class="total-card guest-total">
+      <div class="total-label">🔹 散客总费用</div>
+      <div class="total-amount" id="guestGrandTotal">¥0</div>
+      <div class="total-detail">场地 <span id="sumGuestCourt">¥0</span> + 球 <span id="sumGuestShuttle">¥0</span></div>
     </div>
-    <div class="summary-item">
-      <div class="summary-label">球费</div>
-      <div class="summary-value" id="sumShuttle">¥0</div>
-    </div>
-    <div class="summary-item full">
-      <div class="summary-label">💰 散客总费用（场地 + 球）</div>
-      <div class="summary-value big" id="sumTotal">¥0</div>
-    </div>
-    <div class="summary-item full" style="background:#fff3e0;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-        <span class="summary-label" style="margin-bottom:0;">🏷️ 会员场地费</span>
-        <div style="display:flex;gap:4px;">
-          <button class="member-btn active" data-mt="vip95" onclick="switchMember('vip95')">95折</button>
-          <button class="member-btn" data-mt="vip90" onclick="switchMember('vip90')">9折</button>
-        </div>
-      </div>
-      <div class="summary-value" style="color:#e65100;" id="sumMemberTotal">¥0</div>
-      <div style="font-size:0.73rem;color:var(--text-light);margin-top:2px;" id="memberSavings"></div>
+    <div class="total-card member-total">
+      <div class="total-label">🔸 会员总费用</div>
+      <div class="total-amount" id="memberGrandTotal">¥0</div>
+      <div class="total-detail">场地 <span id="sumMemberCourt">¥0</span> + 球 <span id="sumMemberShuttle">¥0</span></div>
     </div>
   </div>
+
+  <!-- 差价 -->
+  <div class="diff-bar cheaper" id="diffBar">
+    💡 会员比散客便宜 <strong id="diffAmount">¥0</strong>
+  </div>
+
+  <!-- 散客分账 -->
   <div class="summary-breakdown">
     <div class="breakdown-card breakdown-male">
       <div class="label">👨 男生应付</div>
@@ -308,7 +364,7 @@ input.wide { width: 130px; }
 </div>
 
 <script>
-// ===== COURT LIST (from venue map) =====
+// ===== COURT LIST =====
 const COURTS = {
   A: Array.from({length:20}, (_,i) => `A${i+1}`),
   B: Array.from({length:15}, (_,i) => `B${i+21}`),
@@ -413,7 +469,6 @@ function switchMember(mt) {
   recalcAll();
 }
 
-// ===== Get court type from court number =====
 function courtType(courtNum) {
   if (!courtNum) return 'A';
   if (courtNum.startsWith('VIP')) return 'VIP';
@@ -421,7 +476,6 @@ function courtType(courtNum) {
   return 'A';
 }
 
-// ===== Global date =====
 function getDate() {
   const val = document.getElementById('globalDate').value;
   if (!val) return new Date(2026, 6, 18);
@@ -441,7 +495,6 @@ function isWeekend() {
   return d.getDay() === 0 || d.getDay() === 6;
 }
 
-// ===== Get price for a specific court + hour + member type =====
 function getHourPrice(courtNum, hour, memberType) {
   const type = courtType(courtNum);
   const dt = getDayType();
@@ -455,21 +508,12 @@ function getHourPrice(courtNum, hour, memberType) {
 }
 
 // ===== Render price tables =====
-let currentDateType = 'weekday';
-
-function switchDateType(dt) {
-  currentDateType = dt;
-  document.querySelectorAll('.date-toggle').forEach(b => b.classList.toggle('active', b.dataset.dt === dt));
-  renderPriceTables();
-}
-
 function renderPriceTables() {
   const zones = [{key:'A', label:'🟢 A 区（A1-A20）', cls:'a'},
                  {key:'B', label:'🔵 B 区（B21-B35）', cls:'b'},
                  {key:'VIP', label:'🟠 VIP 区（VIP1-VIP2）', cls:'vip'}];
   const fields = ['guest','vip95','vip90'];
   const dayType = getDayType();
-  // Update label
   document.getElementById('priceDayLabel').textContent = isWeekend() ? '🎉 周末/节假日价格' : '💼 工作日价格';
   let html = '';
   for (const z of zones) {
@@ -490,10 +534,6 @@ function renderPriceTables() {
   document.getElementById('priceTables').innerHTML = html;
 }
 
-function renderAllPrices() {
-  renderPriceTables();
-}
-
 function updatePrice(zone, dayType, idx, field, val) {
   PRICES[zone][dayType][idx][field] = val;
   recalcAll();
@@ -509,7 +549,6 @@ function hourOptions(selected, start) {
   return html;
 }
 
-// ===== Court options =====
 function getUsedCourts(excludeIdx) {
   const used = new Set();
   for (let i = 0; i < bookings.length; i++) {
@@ -540,7 +579,6 @@ function courtOptions(selected, excludeIdx) {
 
 // ===== Bookings =====
 function addBooking() {
-  // Auto-assign first unused court
   const used = getUsedCourts(-1);
   let court = '';
   for (const c of [...COURTS.A, ...COURTS.B, ...COURTS.VIP]) {
@@ -564,11 +602,12 @@ function updateBooking(i, field, value) {
   recalcAll();
 }
 
-function calcBookingFee(b) {
+function calcBookingFee(b, memberType) {
+  const mt = memberType || 'guest';
   const qty = b.qty || 1;
   let fee = 0;
   for (let h = b.start; h < b.end; h++) {
-    fee += getHourPrice(b.court, h, 'guest');
+    fee += getHourPrice(b.court, h, mt);
   }
   return fee * qty;
 }
@@ -595,7 +634,7 @@ function renderBookingList() {
     return;
   }
   container.innerHTML = bookings.map((b, i) => {
-    const fee = calcBookingFee(b);
+    const fee = calcBookingFee(b, 'guest');
     const detail = calcBookingDetail(b);
     const qty = b.qty || 1;
     return `
@@ -619,19 +658,21 @@ function renderBookingList() {
   }).join('');
 }
 
-// ===== Shuttle =====
-function calcShuttleFee() {
-  const broughtTube = parseInt(document.getElementById('broughtTube').value) || 0;
-  const broughtPcs = parseInt(document.getElementById('broughtPcs').value) || 0;
-  const remainTube = parseInt(document.getElementById('remainTube').value) || 0;
-  const remainPcs = parseInt(document.getElementById('remainPcs').value) || 0;
-  const tubePrice = parseFloat(document.getElementById('tubePrice').value) || 0;
+// ===== Shuttle calcs (guest & member independent) =====
+function calcShuttleFee(prefix) {
+  const broughtTube = parseInt(document.getElementById(prefix + 'broughtTube').value) || 0;
+  const broughtPcs = parseInt(document.getElementById(prefix + 'broughtPcs').value) || 0;
+  const remainTube = parseInt(document.getElementById(prefix + 'remainTube').value) || 0;
+  const remainPcs = parseInt(document.getElementById(prefix + 'remainPcs').value) || 0;
+  const tubePrice = parseFloat(document.getElementById(prefix + 'tubePrice').value) || 0;
   const totalBrought = broughtTube * 12 + broughtPcs;
   const totalRemain = remainTube * 12 + remainPcs;
   let used = totalBrought - totalRemain;
-  const warn = document.getElementById('shuttleWarn');
-  if (used < 0) { used = 0; warn.classList.remove('hidden'); }
-  else { warn.classList.add('hidden'); }
+  const warn = document.getElementById(prefix.replace('m','') + 'shuttleWarn');
+  if (warn) {
+    if (used < 0) { used = 0; warn.classList.remove('hidden'); }
+    else { warn.classList.add('hidden'); }
+  }
   return (used / 12) * tubePrice;
 }
 
@@ -650,7 +691,6 @@ function toggleCollapse(id) {
   }
 }
 
-// ===== Recalc =====
 function recalcAll() {
   updateDateLabel();
   const males = parseInt(document.getElementById('maleCount').value) || 0;
@@ -659,58 +699,82 @@ function recalcAll() {
 
   renderBookingList();
 
-  let courtFee = 0;
-  for (const b of bookings) { courtFee += calcBookingFee(b); }
+  // Guest court fee
+  let guestCourtFee = 0;
+  for (const b of bookings) { guestCourtFee += calcBookingFee(b, 'guest'); }
 
   // Member court fee
   let memberCourtFee = 0;
-  for (const b of bookings) {
-    let mfee = 0;
-    for (let h = b.start; h < b.end; h++) {
-      mfee += getHourPrice(b.court, h, currentMemberType);
-    }
-    memberCourtFee += mfee * (b.qty || 1);
-  }
+  for (const b of bookings) { memberCourtFee += calcBookingFee(b, currentMemberType); }
 
-  const shuttleFee = calcShuttleFee();
-  const total = courtFee + shuttleFee;
+  // Guest shuttle fee
+  const guestShuttleFee = calcShuttleFee('');
+
+  // Member shuttle fee
+  const memberShuttleFee = calcShuttleFee('m');
+
+  // Grand totals
+  const guestTotal = guestCourtFee + guestShuttleFee;
+  const memberTotal = memberCourtFee + memberShuttleFee;
+
+  // Male/female breakdown (based on guest total)
   const totalPeople = males + females;
-  let malePer = 0, femalePer = 0, maleTotal = 0, femaleTotal = 0;
-
-  if (totalPeople > 0 && total > 0) {
-    const base = total / totalPeople;
+  let malePer = 0, femalePer = 0, maleTotalP = 0, femaleTotalP = 0;
+  if (totalPeople > 0 && guestTotal > 0) {
+    const base = guestTotal / totalPeople;
     femalePer = Math.max(0, base - discount);
     if (males > 0) {
       malePer = base + (females * discount) / males;
     } else if (females > 0) {
       femalePer = base;
     }
-    maleTotal = malePer * males;
-    femaleTotal = femalePer * females;
+    maleTotalP = malePer * males;
+    femaleTotalP = femalePer * females;
   }
 
-  document.getElementById('courtFeeTotal').textContent = '¥' + courtFee.toFixed(2);
-  document.getElementById('sumCourt').textContent = '¥' + courtFee.toFixed(2);
-  document.getElementById('sumShuttle').textContent = '¥' + shuttleFee.toFixed(2);
-  document.getElementById('sumTotal').textContent = '¥' + total.toFixed(2);
-  const memberTotalFee = memberCourtFee + shuttleFee;
-  document.getElementById('sumMemberTotal').textContent = '¥' + memberTotalFee.toFixed(2);
-  const savings = total - memberTotalFee;
-  document.getElementById('memberSavings').textContent = savings > 0 ? '省 ¥' + savings.toFixed(2) : '';
+  // Update court fee total display
+  document.getElementById('courtFeeTotal').textContent = '¥' + guestCourtFee.toFixed(2);
+
+  // Update guest totals
+  document.getElementById('sumGuestCourt').textContent = '¥' + guestCourtFee.toFixed(2);
+  document.getElementById('sumGuestShuttle').textContent = '¥' + guestShuttleFee.toFixed(2);
+  document.getElementById('guestGrandTotal').textContent = '¥' + guestTotal.toFixed(2);
+
+  // Update member totals
+  document.getElementById('sumMemberCourt').textContent = '¥' + memberCourtFee.toFixed(2);
+  document.getElementById('sumMemberShuttle').textContent = '¥' + memberShuttleFee.toFixed(2);
+  document.getElementById('memberGrandTotal').textContent = '¥' + memberTotal.toFixed(2);
+
+  // Diff
+  const diff = guestTotal - memberTotal;
+  const diffBar = document.getElementById('diffBar');
+  if (Math.abs(diff) < 0.01) {
+    diffBar.className = 'diff-bar same';
+    diffBar.innerHTML = '✅ 散客与会员费用相同';
+  } else if (diff > 0) {
+    diffBar.className = 'diff-bar cheaper';
+    diffBar.innerHTML = '💡 会员比散客便宜 <strong id="diffAmount">¥' + diff.toFixed(2) + '</strong>';
+  } else {
+    diffBar.className = 'diff-bar cheaper';
+    diffBar.style.background = '#e8f5e9';
+    diffBar.style.color = '#2d8a4e';
+    diffBar.innerHTML = '⚠️ 散客比会员便宜 <strong id="diffAmount">¥' + Math.abs(diff).toFixed(2) + '</strong>';
+  }
+
+  // Male/female display
   document.getElementById('malePer').textContent = '¥' + malePer.toFixed(2) + '/人';
-  document.getElementById('maleTotal').textContent = '共 ¥' + maleTotal.toFixed(2);
+  document.getElementById('maleTotal').textContent = '共 ¥' + maleTotalP.toFixed(2);
   document.getElementById('femalePer').textContent = '¥' + femalePer.toFixed(2) + '/人';
-  document.getElementById('femaleTotal').textContent = '共 ¥' + femaleTotal.toFixed(2);
+  document.getElementById('femaleTotal').textContent = '共 ¥' + femaleTotalP.toFixed(2);
 }
 
 function esc(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 function init() {
-  // Set today's date as default
   const today = new Date();
   document.getElementById('globalDate').value = today.toISOString().split('T')[0];
   recalcAll();
-  renderAllPrices();
+  renderPriceTables();
   bookings = [
     { court: 'A1', start: 20, end: 22, qty: 1 },
     { court: 'B21', start: 20, end: 22, qty: 1 },
@@ -723,7 +787,6 @@ function updateDateLabel() {
   const days = ['周日','周一','周二','周三','周四','周五','周六'];
   const label = isWeekend() ? '🎉 周末' : '💼 工作日';
   document.getElementById('dateDayLabel').textContent = days[d.getDay()] + ' ' + label;
-  // Also update price table label
   const priceLabel = document.getElementById('priceDayLabel');
   if (priceLabel) priceLabel.textContent = isWeekend() ? '🎉 周末/节假日价格' : '💼 工作日价格';
 }
