@@ -131,6 +131,7 @@ input[type="number"].field:focus { outline: none; border-color: var(--green); }
 input.wide { width: 130px; }
 input.small { width: 60px; }
 .warn-text { color: var(--warn); font-size: 0.78rem; margin-top: 4px; }
+.used-balls { color: var(--green-dark); font-size: 0.85rem; font-weight: 700; margin-top: 6px; text-align: center; }
 .hidden { display: none; }
 
 /* Ball cards side by side */
@@ -311,6 +312,7 @@ input.small { width: 60px; }
       <span style="font-size:0.78rem;color:var(--text-light)">元/桶</span>
     </div>
     <div class="warn-text hidden" id="shuttleWarn">⚠ 剩余数量大于带入数量，请检查</div>
+    <div class="used-balls" id="shuttleUsed">已用 0 个</div>
   </div>
 
   <!-- 会员用球 -->
@@ -346,6 +348,7 @@ input.small { width: 60px; }
       <span style="font-size:0.78rem;color:var(--text-light)">元/桶</span>
     </div>
     <div class="warn-text hidden" id="mshuttleWarn">⚠ 剩余数量大于带入数量，请检查</div>
+    <div class="used-balls" id="mshuttleUsed">已用 0 个</div>
   </div>
 </div>
 
@@ -704,11 +707,13 @@ function calcShuttleFee(prefix) {
   const totalBrought = broughtTube * 12 + broughtPcs;
   const totalRemain = remainTube * 12 + remainPcs;
   let used = totalBrought - totalRemain;
-  const warn = document.getElementById(prefix.replace('m','') + 'shuttleWarn');
+  const warn = document.getElementById(prefix + 'shuttleWarn');
+  const usedEl = document.getElementById(prefix + 'shuttleUsed');
   if (warn) {
     if (used < 0) { used = 0; warn.classList.remove('hidden'); }
     else { warn.classList.add('hidden'); }
   }
+  if (usedEl) usedEl.textContent = '已用 ' + used + ' 个';
   return (used / 12) * tubePrice;
 }
 
